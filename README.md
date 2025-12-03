@@ -1,4 +1,4 @@
-```bash
+```shell
 git clone https://github.com/iYashKun/Wallets.git
 cd Wallets
 
