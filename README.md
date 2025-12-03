@@ -16,11 +16,23 @@ Supports custom prefixes up to 10 hex characters.
 
 ```sh
 git clone https://github.com/iYashKun/Wallets.git
+```
+```sh
 cd Wallets
+```
 
+```sh
 go version
+```
+```sh
 go mod init walletgen
+```
+```sh
 go get github.com/ethereum/go-ethereum
+```
+```sh
 go get github.com/schollz/progressbar/v3
+```
+```sh
 go run gen.go
 ```
