@@ -1,9 +1,9 @@
-# Ethereum Wallet Generator (Fast Vanity and Normal Wallets)
+# Ethereum Wallet Generator
 
 A high-performance Ethereum wallet generator written in Go, supporting:
 
 - Multi-threaded wallet generation  
-- Vanity address search (custom prefix)  
+- Vanity address search (custom prefixs)  
 - Filtering wallets that contain **F**
 
 ---
