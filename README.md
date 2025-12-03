@@ -20,7 +20,6 @@ git clone https://github.com/iYashKun/Wallets.git
 ```sh
 cd Wallets
 ```
-
 ```sh
 go version
 ```
