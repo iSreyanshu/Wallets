@@ -62,7 +62,7 @@ go get github.com/schollz/progressbar/v3
 
 ### 3. Run
 
-```sh
+```bash
 go run gen.go
 ```
 
