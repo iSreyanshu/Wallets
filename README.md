@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/burn-address.png" alt="wallet-generator" width="80%" />
+<img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/burn-address.png" alt="wallet-generator" style="width: 80%; border-radius: 10px;" />
 
 # Wallet Generator
 
