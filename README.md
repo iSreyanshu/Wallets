@@ -3,7 +3,6 @@
 # Wallet Generator
 
 **Ethereum wallet generator written in Go.**  
-Bulk generation · Vanity addresses · Auto-save
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://golang.org)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
