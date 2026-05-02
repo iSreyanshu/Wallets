@@ -12,7 +12,7 @@
 
 ---
 
-## ✨ Features
+## <img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/turtle-banner.png" width="50" align="center" /> Features
 
 | Feature | Description |
 |---|---|
@@ -24,7 +24,7 @@
 
 ---
 
-## 🖥️ Preview
+## <img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/turtle-banner.png" width="50" align="center" /> Preview
 
 ```shell
   Select mode:
@@ -43,7 +43,7 @@
 
 ---
 
-## 🚀 Quick Start
+## <img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/turtle-banner.png" width="50" align="center" /> Quick Start
 
 ### 1. Clone
 
@@ -68,7 +68,7 @@ go run gen.go
 
 ---
 
-## 🎯 Modes
+## <img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/turtle-banner.png" width="50" align="center" /> Modes
 
 ### Mode1 - Normal Wallets
 Generates N wallets as fast as possible. All addresses are filtered to exclude any containing the letter `F`.
@@ -80,7 +80,7 @@ Searches for addresses matching your custom prefix. Example: entering `dead` wil
 
 ---
 
-## 📁 Output
+## <img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/turtle-banner.png" width="50" align="center" /> Output
 
 All wallets are saved to **`wallets.txt`** in the same directory:
 
@@ -90,7 +90,7 @@ Address: 0x1a2b... | PrivateKey: 4f3e... | Generated: 2026-05-02T14:32:01Z
 
 ---
 
-## ⚠️ Security Notice
+## <img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/turtle-banner.png" width="50" align="center" /> Security Notice
 
 > **Never share your private keys.**  
 > This tool is for educational and development purposes.  
@@ -98,13 +98,13 @@ Address: 0x1a2b... | PrivateKey: 4f3e... | Generated: 2026-05-02T14:32:01Z
 
 ---
 
-## 🛠️ Configuration
+## <img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/turtle-banner.png" width="50" align="center" /> Configuration
 
 Edit the `Config` struct in `gen.go` to tune performance:
 
 ```go
 cfg := Config{
-    WorkerCount: 20, // increase for more CPU cores
+    WorkerCount: 20, // Increase for more CPU cores
 }
 ```
 
