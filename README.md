@@ -2,7 +2,7 @@
 
 # Wallet Generator
 
-**Ethereum wallet generator written in Go.**
+**Ethereum wallet generator written in Go**
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://golang.org)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
@@ -27,11 +27,6 @@
 ## 🖥️ Preview
 
 ```
-  ╔══════════════════════════════════════════╗
-  ║       ⚡  ETH  WALLET  GENERATOR  ⚡      ║
-  ║     blazing-fast · vanity · no-F filter   ║
-  ╚══════════════════════════════════════════╝
-
   Select mode:
   [1]  Normal wallets   — fast bulk generation, no-F filter
   [2]  Vanity wallets   — custom prefix + no-F filter
@@ -53,7 +48,7 @@
 ### 1. Clone
 
 ```sh
-git clone https://github.com/iYashKun/Wallets.git
+git clone https://github.com/iSreyanshu/Wallets.git
 cd Wallets
 ```
 
@@ -75,10 +70,10 @@ go run gen.go
 
 ## 🎯 Modes
 
-### Mode 1 — Normal Wallets
+### Mode1 - Normal Wallets
 Generates N wallets as fast as possible. All addresses are filtered to exclude any containing the letter `F`.
 
-### Mode 2 — Vanity Wallets
+### Mode2 - Vanity Wallets
 Searches for addresses matching your custom prefix. Example: entering `dead` will find addresses starting with `0xdead…`
 
 > **Tip:** Longer prefixes = exponentially more attempts. Keep it under 6 chars for reasonable speed.
@@ -89,7 +84,7 @@ Searches for addresses matching your custom prefix. Example: entering `dead` wil
 
 All wallets are saved to **`wallets.txt`** in the same directory:
 
-```
+```shell
 Address: 0x1a2b... | PrivateKey: 4f3e... | Generated: 2026-05-02T14:32:01Z
 ```
 
@@ -116,5 +111,5 @@ cfg := Config{
 ---
 
 <div align="center">
-Made with ❤️ by [iSreyanshu](https://github.com/iSreyanshu)
+  Made with ❤️ by [iSreyanshu](https://github.com/iSreyanshu)
 </div>
