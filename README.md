@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/iSreyanshu/tgrammY/app/assets/burn-address.png" alt="wallet-generator" width="100%" />
+
 # Wallet Generator
 
 **Ethereum wallet generator written in Go**
