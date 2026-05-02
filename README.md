@@ -28,8 +28,8 @@
 
 ```shell
   Select mode:
-  [1]  Normal wallets   — fast bulk generation, no-F filter
-  [2]  Vanity wallets   — custom prefix + no-F filter
+  [1]  Normal wallets   - fast bulk generation, no-F filter
+  [2]  Vanity wallets   - custom prefix + no-F filter
 
   ❯ 1
 
