@@ -2,8 +2,7 @@
 
 # Wallet Generator
 
-**Ethereum wallet generator written in Go.**  
-
+**Ethereum wallet generator written in Go.**
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://golang.org)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue?style=for-the-badge)]()
@@ -16,12 +15,11 @@
 
 | Feature | Description |
 |---|---|
-| 🚀 **Multi-core generation** | 20 goroutines hammering ECDSA key-pairs in parallel |
-| 🎯 **Vanity addresses** | Custom prefix search up to 10 hex characters |
-| 🚫 **No-F filter** | Automatically skips any address containing `f` or `F` |
-| 💾 **Auto-save** | Every wallet is appended to `wallets.txt` instantly |
-| 📊 **Live stats** | Progress bar + attempts counter + wallets/sec rate |
-| 🛑 **Graceful shutdown** | `Ctrl+C` cleanly stops all workers mid-run |
+| **Multi-core generation** | 20 goroutines hammering ECDSA key-pairs in parallel |
+| **Vanity addresses** | Custom prefix search up to 10 hex characters |
+| **No-F filter** | Automatically skips any address containing `f` or `F` |
+| **Auto-save** | Every wallet is appended to `wallets.txt` instantly |
+| **Graceful shutdown** | `Ctrl+C` cleanly stops all workers mid-run |
 
 ---
 
