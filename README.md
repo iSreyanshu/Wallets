@@ -26,7 +26,7 @@
 
 ## 🖥️ Preview
 
-```
+```shell
   Select mode:
   [1]  Normal wallets   — fast bulk generation, no-F filter
   [2]  Vanity wallets   — custom prefix + no-F filter
@@ -47,14 +47,14 @@
 
 ### 1. Clone
 
-```sh
+```shell
 git clone https://github.com/iSreyanshu/Wallets.git
 cd Wallets
 ```
 
 ### 2. Install dependencies
 
-```sh
+```shell
 go mod init walletgen
 go get github.com/ethereum/go-ethereum
 go get github.com/schollz/progressbar/v3
@@ -111,5 +111,7 @@ cfg := Config{
 ---
 
 <div align="center">
+  
   Made with ❤️ by [iSreyanshu](https://github.com/iSreyanshu)
+  
 </div>
