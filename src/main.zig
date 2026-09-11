@@ -16,6 +16,8 @@ const Arguments = struct {
     workers: ?usize = null,
 };
 
+const WorkChunk = 64;
+
 const Shared = struct {
     output: std.io.BufferedWriter(64 * 1024, std.fs.File.Writer),
     write_mutex: std.Thread.Mutex = .{},
@@ -82,9 +84,12 @@ fn worker(shared: *Shared) void {
     defer flushOutput(shared, &output_buffer, &output_len);
 
     while (!shared.failed.load(.acquire)) {
-        const index = shared.next_index.fetchAdd(1, .monotonic);
-        if (index >= shared.total) break;
-
+        const start = shared.next_index.fetchAdd(WorkChunk, .monotonic);
+        if (start >= shared.total) break;
+        const end = @min(start + WorkChunk, shared.total);
+        var chunk_completed: usize = 0;
+        for (start..end) |_| {
+            if (shared.failed.load(.acquire)) return;
         var private_key: [32]u8 = undefined;
         var public_key: [65]u8 = undefined;
         while (true) {
@@ -108,10 +113,12 @@ fn worker(shared: *Shared) void {
                 encodeHex(&private_key, line[43..107]);
                 line[107] = '\n';
                 output_len += 108;
-                _ = shared.completed.fetchAdd(1, .release);
+                chunk_completed += 1;
                 break;
             }
         }
+        }
+        if (chunk_completed != 0) _ = shared.completed.fetchAdd(chunk_completed, .release);
     }
 }
 
@@ -228,7 +235,7 @@ fn parseArguments(args: []const []const u8) !Arguments {
         if (value == 0) return error.InvalidArguments;
         if (std.mem.eql(u8, args[index], "--count")) {
             result.count = value;
-        } else if (std.mem.eql(u8, args[index], "--worker")) {
+        } else if (std.mem.eql(u8, args[index], "--worker") or std.mem.eql(u8, args[index], "--workers")) {
             result.workers = value;
         } else {
             return error.InvalidArguments;

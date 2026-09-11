@@ -30,15 +30,4 @@ pub fn build(b: *std.Build) void {
     const run_step = b.step("run", "Generate evm wallets");
     run_step.dependOn(&run.step);
 
-    const site = b.addExecutable(.{
-        .name = "site",
-        .root_source_file = b.path("src/site.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-    const site_run = b.addRunArtifact(site);
-    if (b.args) |args| site_run.addArgs(args);
-
-    const site_step = b.step("site", "Generate the GitHub Pages site");
-    site_step.dependOn(&site_run.step);
 }
