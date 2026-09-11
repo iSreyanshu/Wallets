@@ -1,1071 +1,181 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Wallet Generator</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amaranth:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-
-<style>
-:root {
-  --bg: #fafafa;
-  --surface: rgba(255, 255, 255, .82);
-  --surface-solid: #ffffff;
-  --surface-2: #f4f4f5;
-
-  --border: #e7e7ea;
-  --border-dark: #dcdce1;
-
-  --text: #151518;
-  --muted: #74747d;
-  --muted-2: #a0a0a8;
-
-  --accent: #111113;
-  --green: #159447;
-  --green-light: #eaf8ef;
-  --radius: 18px;
-  --radius-lg: 24px;
-
-  --shadow-sm:
-    0 4px 16px rgba(0, 0, 0, .045);
-  --shadow:
-    0 14px 40px rgba(0, 0, 0, .07);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: "Amaranth", sans-serif;
-  background:
-    radial-gradient(
-      circle at 50% -10%,
-      #eeeeef 0,
-      transparent 32%
-    ),
-    var(--bg);
-
-  color: var(--text);
-  line-height: 1.6;
-  min-height: 100vh;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: #a8a8ae transparent;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: .35;
-  background-image:
-    linear-gradient(
-      rgba(0, 0, 0, .018) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(0, 0, 0, .018) 1px,
-      transparent 1px
-    );
-
-  background-size: 32px 32px;
-  mask-image:
-    linear-gradient(
-      to bottom,
-      black,
-      transparent 80%
-    );
-}
-
-::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #c4c4c9,
-    #96969d
-  );
-
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #99999f,
-    #6f6f76
-  );
-
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-.container {
-  width: min(860px, 100%);
-  margin: 0 auto;
-  padding: 55px 22px 35px;
-  position: relative;
-}
-
-header {
-  text-align: center;
-  margin-bottom: 48px;
-}
-
-.brand-dot {
-  width: 54px;
-  height: 54px;
-  margin: 0 auto 18px;
-  border-radius: 17px;
-  display: grid;
-  place-items: center;
-  background: #111113;
-  box-shadow:
-    0 12px 28px rgba(0, 0, 0, .16),
-    inset 0 1px 0 rgba(255, 255, 255, .12);
-  overflow: hidden;
-}
-
-.brand-dot svg {
-  width: 34px;
-  height: 34px;
-  display: block;
-}
-
-h1 {
-  font-size: clamp(2.25rem, 8vw, 4rem);
-  font-weight: 700;
-  letter-spacing: -.035em;
-  line-height: 1;
-}
-
-.subtitle {
-  max-width: 620px;
-  margin: 17px auto 0;
-  color: var(--muted);
-  font-size: 1rem;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 17px;
-  padding: 7px 13px;
-  border: 1px solid #cfeeda;
-  background: var(--green-light);
-  color: var(--green);
-  border-radius: 999px;
-  font-size: .8rem;
-  font-weight: 700;
-}
-
-.tag::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow:
-    0 0 0 4px rgba(21, 148, 71, .1);
-}
-
-section {
-  margin: 22px 0;
-  padding: 25px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease,
-    border-color .2s ease;
-}
-
-section:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-dark);
-  box-shadow: var(--shadow);
-}
-
-h2 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.45rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-h2::before {
-  content: "";
-  width: 5px;
-  height: 23px;
-  border-radius: 10px;
-  background: var(--text);
-}
-
-p {
-  color: var(--muted);
-  font-size: .98rem;
-  margin-bottom: 15px;
-}
-
-strong {
-  color: var(--text);
-  font-weight: 700;
-}
-
-ol,
-ul {
-  margin: 14px 0 18px 23px;
-  color: var(--muted);
-}
-
-li {
-  padding: 4px 0;
-  font-size: .96rem;
-}
-
-li::marker {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.code-wrapper {
-  position: relative;
-  width: 100%;
-  margin: 16px 0;
-}
-
-pre {
-  position: relative;
-  width: 100%;
-  background: #111113;
-  color: #eeeeef;
-  padding: 19px 48px 19px 19px;
-  border-radius: 16px;
-  border: 1px solid #28282c;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: pre;
-  font-family:
-    "Google Sans Code",
-    monospace;
-  font-size: .88rem;
-  line-height: 1.7;
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, .11),
-    inset 0 1px 0 rgba(255, 255, 255, .035);
-  scrollbar-width: thin;
-  scrollbar-color:
-    #55555c
-    transparent;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-}
-
-code {
-  font-family:
-    "Google Sans Code",
-    monospace;
-  font-weight: 400;
-  white-space: pre;
-}
-
-pre::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
-
-pre::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-pre::-webkit-scrollbar-thumb {
-  background: #4d4d54;
-  border-radius: 999px;
-}
-
-pre::-webkit-scrollbar-thumb:hover {
-  background: #6a6a72;
-}
-
-pre::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-.copy-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 30px;
-  height: 30px;
-  display: grid;
-  place-items: center;
-  border:
-    1px solid
-    rgba(255, 255, 255, .12);
-  background:
-    rgba(255, 255, 255, .07);
-  color: #d9d9dc;
-  border-radius: 9px;
-  cursor: pointer;
-  font-family: "Amaranth", sans-serif;
-  font-size: 14px;
-  line-height: 1;
-  z-index: 5;
-  transition:
-    background .18s ease,
-    color .18s ease,
-    transform .18s ease,
-    border-color .18s ease;
-}
-
-.copy-btn svg {
-  width: 15px;
-  height: 15px;
-  display: block;
-  color: currentColor;
-  flex-shrink: 0;
-}
-
-.copy-btn:hover {
-  background:
-    rgba(255, 255, 255, .14);
-  color: white;
-  transform: scale(1.05);
-}
-
-.copy-btn:active {
-  transform: scale(.94);
-}
-
-.copy-btn.copied {
-  color: #5ee58b;
-  background:
-    rgba(21, 148, 71, .14);
-  border-color:
-    rgba(21, 148, 71, .3);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--accent);
-  color: white;
-  padding: 11px 19px;
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: .9rem;
-  box-shadow:
-    0 7px 20px rgba(0, 0, 0, .14);
-  transition:
-    transform .2s ease,
-    background .2s ease,
-    box-shadow .2s ease;
-}
-
-.btn:hover {
-  background: #29292c;
-  transform: translateY(-2px);
-  box-shadow:
-    0 12px 28px rgba(0, 0, 0, .18);
-}
-
-.footer {
-  text-align: center;
-  margin-top: 45px;
-  padding-bottom: 10px;
-  color: var(--muted-2);
-  font-size: .8rem;
-}
-
-.footer span {
-  color: var(--text);
-}
-
-::selection {
-  background: #111113;
-  color: white;
-}
-
-@media (max-width: 600px) {
-
-  ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
-  }
-
-  .container {
-    padding: 30px 14px;
-  }
-
-  header {
-    margin-bottom: 32px;
-  }
-
-  .brand-dot {
-    width: 48px;
-    height: 48px;
-    border-radius: 15px;
-  }
-
-  .brand-dot svg {
-    width: 30px;
-    height: 30px;
-  }
-
-  h1 {
-    font-size:
-      clamp(2.1rem, 12vw, 3rem);
-  }
-
-  .subtitle {
-    font-size: .9rem;
-  }
-
-  section {
-    padding: 19px;
-    margin: 16px 0;
-    border-radius: 20px;
-  }
-
-  h2 {
-    font-size: 1.3rem;
-  }
-
-  p,
-  li {
-    font-size: .9rem;
-  }
-
-  pre {
-    padding:
-      17px 43px 17px 15px;
-    font-size: .78rem;
-    border-radius: 14px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    white-space: pre;
-    scrollbar-color: transparent transparent;
-  }
-     
-  pre::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-  }
-
-  pre::-webkit-scrollbar-track,
-  pre::-webkit-scrollbar-thumb,
-  pre::-webkit-scrollbar-corner {
-    display: none;
-    width: 0;
-    height: 0;
-  }
-
-  .copy-btn {
-    top: 8px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
-    font-size: 13px;
-  }
-
-  .copy-btn svg {
-    width: 14px;
-    height: 14px;
-  }
-}
-
-@media (max-width: 380px) {
-  .container {
-    padding-left: 11px;
-    padding-right: 11px;
-  }
-
-  section { padding: 17px; }
-
-  pre {
-    font-size: .74rem;
-    padding-left: 13px;
-    padding-right: 40px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-
-  section,
-  .btn,
-  .copy-btn {
-    transition: none;
-  }
-}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVM Wallet Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amaranth:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #18221e;
+      --muted: #66736d;
+      --line: #dfe7e2;
+      --paper: #f7faf7;
+      --card: rgba(255, 255, 255, 0.84);
+      --mint: #c9f27c;
+      --mint-dark: #618b21;
+      --night: #18221e;
+      --orange: #f1a36b;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(201, 242, 124, .32), transparent 30%),
+        radial-gradient(circle at 96% 16%, rgba(241, 163, 107, .2), transparent 25%),
+        var(--paper);
+      font-family: 'Amaranth', sans-serif;
+      line-height: 1.55;
+    }
+
+    .page { width: min(900px, calc(100% - 36px)); margin: 0 auto; padding: 42px 0 64px; }
+    header { position: relative; padding: 42px 0 34px; border-bottom: 1px solid var(--line); }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; color: var(--mint-dark); font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .eyebrow::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px rgba(241, 163, 107, .18); }
+    h1 { max-width: 680px; margin: 0; font-size: clamp(3.1rem, 9vw, 6.7rem); font-weight: 700; letter-spacing: -.045em; line-height: .92; }
+    .intro { max-width: 620px; margin: 24px 0 0; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.3rem); }
+    .badges { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 25px; }
+    .badge { display: inline-flex; align-items: center; min-height: 29px; padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--muted); font-size: .75rem; font-weight: 700; }
+    .badge strong { color: var(--ink); margin-right: 5px; }
+    main { display: grid; gap: 18px; margin-top: 28px; }
+    section { padding: 27px 28px 29px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); box-shadow: 0 14px 34px rgba(44, 67, 53, .06); }
+    h2 { display: flex; align-items: center; gap: 11px; margin: 0 0 13px; font-size: 1.65rem; line-height: 1.1; }
+    h2::before { content: ''; width: 7px; height: 24px; border-radius: 10px; background: var(--mint); }
+    p, li { color: var(--muted); font-size: 1rem; }
+    p { margin: 0 0 16px; }
+    strong { color: var(--ink); }
+    ol, ul { margin: 0 0 18px; padding-left: 22px; }
+    li { padding: 3px 0; }
+    code { font-family: inherit; }
+    .code-wrap { position: relative; margin: 17px 0 18px; }
+    pre { margin: 0; padding: 19px 54px 19px 19px; overflow-x: auto; border: 1px solid #2b3a33; border-radius: 13px; background: var(--night); color: #e8f6e9; font-family: 'Amaranth', sans-serif; font-size: .94rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+    .copy-btn { position: absolute; top: 10px; right: 10px; display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; background: rgba(255,255,255,.08); color: #e8f6e9; cursor: pointer; transition: background .2s, transform .2s; }
+    .copy-btn:hover { background: rgba(201, 242, 124, .22); transform: translateY(-1px); }
+    .copy-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .copy-btn.copied { color: var(--mint); }
+    .callout { margin-top: 20px; padding: 15px 17px; border-left: 3px solid var(--orange); border-radius: 0 11px 11px 0; background: #fff4eb; color: #805534; font-size: .95rem; }
+    .footer { padding-top: 32px; color: var(--muted); text-align: center; font-size: .9rem; }
+    .footer span { color: var(--orange); }
+
+    @media (max-width: 600px) {
+      .page { width: min(100% - 24px, 900px); padding-top: 18px; }
+      header { padding: 30px 4px 28px; }
+      h1 { font-size: clamp(3rem, 17vw, 4.8rem); }
+      section { padding: 23px 18px 24px; }
+      h2 { font-size: 1.45rem; }
+      pre { font-size: .86rem; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div class="brand-dot">
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
-        <path d="M0 0h32v32H0z" fill="none"/>
-        <defs>
-          <filter
-            id="SVGtW6Dne1o"
-            width="111.7%"
-            height="111.7%"
-            x="-5.8%"
-            y="-4.2%"
-            filterUnits="objectBoundingBox"
-          >
-            <feOffset
-              dy=".5"
-              in="SourceAlpha"
-              result="shadowOffsetOuter1"
-            />
-            <feGaussianBlur
-              in="shadowOffsetOuter1"
-              result="shadowBlurOuter1"
-              stdDeviation=".5"
-            />
-            <feComposite
-              in="shadowBlurOuter1"
-              in2="SourceAlpha"
-              operator="out"
-              result="shadowBlurOuter1"
-            />
-            <feColorMatrix
-              in="shadowBlurOuter1"
-              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.199473505 0"
-            />
+  <div class="page">
+    <header>
+      <div class="eyebrow">Local key generation toolkit</div>
+      <h1>EVM Wallet<br>Generator</h1>
+      <p class="intro">A fast, local wallet generator with normal, vanity and exclusion modes. Your keys stay on your machine.</p>
+      <div class="badges">
+        <span class="badge"><strong>Zig</strong> 0.13.0</span>
+        <span class="badge"><strong>Crypto</strong> secp256k1 + Keccak</span>
+        <span class="badge">OS-backed randomness</span>
+      </div>
+    </header>
 
-          </filter>
-
-          <filter
-            id="SVGw0qHYdBn"
-            width="123.3%"
-            height="114.6%"
-            x="-11.7%"
-            y="-5.2%"
-            filterUnits="objectBoundingBox"
-          >
-            <feOffset
-              dy=".5"
-              in="SourceAlpha"
-              result="shadowOffsetOuter1"
-            />
-            <feGaussianBlur
-              in="shadowOffsetOuter1"
-              result="shadowBlurOuter1"
-              stdDeviation=".5"
-            />
-            <feComposite
-              in="shadowBlurOuter1"
-              in2="SourceAlpha"
-              operator="out"
-              result="shadowBlurOuter1"
-            />
-            <feColorMatrix
-              in="shadowBlurOuter1"
-              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.204257246 0"
-            />
-
-          </filter>
-
-          <linearGradient
-            id="SVGxjwWZbcU"
-            x1="50%"
-            x2="50%"
-            y1="0%"
-            y2="100%"
-          >
-            <stop
-              offset="0%"
-              stop-color="#fff"
-              stop-opacity=".5"
-            />
-            <stop
-              offset="100%"
-              stop-opacity=".5"
-            />
-
-          </linearGradient>
-
-          <circle
-            id="SVGMSOqEeDZ"
-            cx="16"
-            cy="15"
-            r="15"
-          />
-
-          <path
-            id="SVG7k6gtcQy"
-            d="M16.498 20.968L24 16.616l-7.502 10.379L9 16.615zm0-17.968l7.497 12.22l-7.497 4.353L9 15.22z"
-          />
-        </defs>
-
-        <g
-          fill="none"
-          fill-rule="evenodd"
-        >
-          <use
-            fill="#000"
-            filter="url(#SVGtW6Dne1o)"
-            href="#SVGMSOqEeDZ"
-          />
-          <use
-            fill="#627eea"
-            href="#SVGMSOqEeDZ"
-          />
-          <use
-            fill="url(#SVGxjwWZbcU)"
-            href="#SVGMSOqEeDZ"
-          />
-          <circle
-            cx="16"
-            cy="15"
-            r="14.5"
-            stroke="#000"
-            stroke-opacity=".097"
-          />
-
-          <g fill-rule="nonzero">
-
-            <use
-              fill="#000"
-              filter="url(#SVGw0qHYdBn)"
-              href="#SVG7k6gtcQy"
-            />
-            <use
-              fill="#fff"
-              fill-opacity="0"
-              fill-rule="evenodd"
-              href="#SVG7k6gtcQy"
-            />
-          </g>
-
-          <g
-            fill="#fff"
-            fill-rule="nonzero"
-          >
-            <path
-              fill-opacity=".602"
-              d="M16.498 3v8.87l7.497 3.35z"
-            />
-
-            <path
-              d="M16.498 3L9 15.22l7.498-3.35z"
-            />
-
-            <path
-              fill-opacity=".602"
-              d="M16.498 20.968v6.027L24 16.616z"
-            />
-
-            <path
-              d="M16.498 26.995v-6.028L9 16.616z"
-            />
-
-            <path
-              fill-opacity=".2"
-              d="m16.498 19.573l7.497-4.353l-7.497-3.348z"
-            />
-
-            <path
-              fill-opacity=".602"
-              d="m9 15.22l7.498 4.353v-7.701z"
-            />
-
-          </g>
-        </g>
-      </svg>
-    </div>
-
-    <h1>Wallet Generator</h1>
-
-    <div class="tag">
-      Local • Fast • Private
-    </div>
-
-    <p class="subtitle">
-      A local EVM wallet generator with normal, vanity
-      and exclusion modes.
-    </p>
-
-  </header>
-
-  <section>
-    <h2>Quick Start</h2>
-    <div class="code-wrapper">
-
-      <pre><code>git clone https://github.com/iSreyanshu/Wallets.git
+    <main>
+      <section>
+        <h2>Quick Start</h2>
+        <div class="code-wrap">
+          <pre><code>git clone https://github.com/iSreyanshu/Wallets.git
 cd Wallets
 chmod +x install.sh run.sh
 ./install.sh
 ./run.sh</code></pre>
+          <button class="copy-btn" type="button" aria-label="Copy Quick Start commands" title="Copy" data-copy="git clone https://github.com/iSreyanshu/Wallets.git
+cd Wallets
+chmod +x install.sh run.sh
+./install.sh
+./run.sh">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path></svg>
+          </button>
+        </div>
+        <p>The installer handles compiler, build and OpenSSL prerequisites. It installs Zig in <strong>~/.local/zig</strong> and does not require a system-wide Zig package.</p>
+      </section>
 
-      <button
-        class="copy-btn"
-        type="button"
-        title="Copy code"
-        aria-label="Copy code"
-      >
+      <section>
+        <h2>Modes</h2>
+        <p>Each run opens an interactive menu and asks for the wallet count:</p>
+        <ol>
+          <li>Generate normal wallets.</li>
+          <li>Generate vanity wallets by matching up to 10 hexadecimal characters after <strong>0x</strong> or at the end of the address.</li>
+          <li>Generate wallets excluding a comma-separated list of hexadecimal characters, such as <strong>b,6,f</strong>.</li>
+        </ol>
+        <p>The output is written to <strong>wallets.csv</strong> (address has no <strong>0x</strong>; private key keeps its <strong>0x</strong> prefix):</p>
+        <div class="code-wrap">
+          <pre><code>address,private_key
+023bcd...,0x...</code></pre>
+          <button class="copy-btn" type="button" aria-label="Copy CSV example" title="Copy" data-copy="address,private_key
+023bcd...,0x...">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path></svg>
+          </button>
+        </div>
+      </section>
 
-        <!-- COPY SVG -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="1em"
-          height="1em"
-          viewBox="0 0 16 16"
-        >
+      <section>
+        <h2>Performance</h2>
+        <p>The default pool size is <strong>100 workers per detected CPU core</strong>, capped by the requested wallet count. Override it with <strong>--worker</strong>:</p>
+        <div class="code-wrap">
+          <pre><code>./run.sh --count 100000 --worker 1000</code></pre>
+          <button class="copy-btn" type="button" aria-label="Copy performance command" title="Copy" data-copy="./run.sh --count 100000 --worker 1000">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path></svg>
+          </button>
+        </div>
+      </section>
 
-          <path
-            d="M0 0h16v16H0z"
-            fill="none"
-          />
-
-          <path
-            fill="currentColor"
-            d="M5 6H4a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1h1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1zm7-4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM8 3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"
-          />
-
-        </svg>
-
-      </button>
-
-    </div>
-
-
-    <p>
-      The installer handles compiler, build and OpenSSL prerequisites.
-      Zig installs locally in
-      <strong>~/.local/zig</strong>.
-    </p>
-
-  </section>
-
-  <section>
-
-    <h2>Modes</h2>
-
-
-    <p>
-      Each run opens an interactive menu and asks for the wallet count:
-    </p>
-
-
-    <ol>
-
-      <li>
-        Generate normal wallets.
-      </li>
-
-      <li>
-        Generate vanity wallets by matching up to
-        10 hexadecimal characters.
-      </li>
-
-      <li>
-        Generate wallets excluding a comma-separated list
-        of hexadecimal characters such as
-        <strong>b,6,f</strong>.
-      </li>
-
-    </ol>
-
-
-    <p>
-      Output is written to
-      <strong>wallets.csv</strong>.
-      The address has no <strong>0x</strong>,
-      while the private key keeps the
-      <strong>0x</strong> prefix.
-    </p>
-
-
-    <div class="code-wrapper">
-
-      <pre><code>address,private_key
-023bcd00...,0x...
-8fa21e66...,0x...</code></pre>
-
-
-      <button
-        class="copy-btn"
-        type="button"
-        title="Copy code"
-        aria-label="Copy code"
-      >
-
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="1em"
-          height="1em"
-          viewBox="0 0 16 16"
-        >
-
-          <path
-            d="M0 0h16v16H0z"
-            fill="none"
-          />
-
-          <path
-            fill="currentColor"
-            d="M5 6H4a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1h1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1zm7-4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM8 3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"
-          />
-
-        </svg>
-
-      </button>
-
-    </div>
-
-  </section>
-
-  <section>
-
-    <h2>Performance</h2>
-
-
-    <p>
-      Default pool size:
-      <strong>100 workers per detected CPU core</strong>,
-      capped by wallet count.
-    </p>
-
-
-    <div class="code-wrapper">
-
-      <pre><code>./run.sh --count 100000 --worker 1000</code></pre>
-
-
-      <button
-        class="copy-btn"
-        type="button"
-        title="Copy code"
-        aria-label="Copy code"
-      >
-
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="1em"
-          height="1em"
-          viewBox="0 0 16 16"
-        >
-
-          <path
-            d="M0 0h16v16H0z"
-            fill="none"
-          />
-
-          <path
-            fill="currentColor"
-            d="M5 6H4a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1h1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1zm7-4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM8 3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"
-          />
-
-        </svg>
-
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <section>
-
-    <h2>Manual Build</h2>
-
-
-    <div class="code-wrapper">
-
-      <pre><code>zig build -Doptimize=ReleaseFast
+      <section>
+        <h2>Manual Build</h2>
+        <p>The build links OpenSSL's secp256k1 implementation and includes the Ethereum Keccak-256 implementation in <strong>deps/keccak</strong>.</p>
+        <div class="code-wrap">
+          <pre><code>zig build -Doptimize=ReleaseFast
 zig build run -Doptimize=ReleaseFast -- --count 1000 --worker 400</code></pre>
+          <button class="copy-btn" type="button" aria-label="Copy build commands" title="Copy" data-copy="zig build -Doptimize=ReleaseFast
+zig build run -Doptimize=ReleaseFast -- --count 1000 --worker 400">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path></svg>
+          </button>
+        </div>
+      </section>
 
+      <section>
+        <h2>Security</h2>
+        <ul>
+          <li>Private keys come from <strong>std.crypto.random</strong>, backed by the operating system.</li>
+          <li><strong>wallets.csv</strong> contains spendable secrets. Treat it like a password vault.</li>
+          <li>Never commit, upload or paste generated private keys into chat or issue trackers.</li>
+          <li>This tool does not connect to a blockchain or check balances.</li>
+        </ul>
+        <div class="callout">Keep generated wallet files local, encrypted and out of version control.</div>
+      </section>
+    </main>
 
-      <button
-        class="copy-btn"
-        type="button"
-        title="Copy code"
-        aria-label="Copy code"
-      >
-
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="1em"
-          height="1em"
-          viewBox="0 0 16 16"
-        >
-
-          <path
-            d="M0 0h16v16H0z"
-            fill="none"
-          />
-
-          <path
-            fill="currentColor"
-            d="M5 6H4a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1h1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1zm7-4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM8 3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"
-          />
-
-        </svg>
-
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <section>
-
-    <h2>Security</h2>
-
-
-    <ul>
-
-      <li>
-        Private keys from std.crypto.random (OS backed).
-      </li>
-
-      <li>
-        <strong>wallets.csv</strong> contains spendable secrets —
-        treat it like a password vault.
-      </li>
-
-      <li>
-        Never commit, upload or paste private keys to chat or issues.
-      </li>
-
-      <li>
-        No blockchain connection or balance check.
-      </li>
-
-    </ul>
-
-  </section>
-
-
-  <div class="footer">
-
-    Built for local use •
-    <span>Keep your keys private.</span>
-
+    <div class="footer">Local <span>•</span> Fast <span>•</span> Private</div>
   </div>
 
-</div>
-
-
-<script>
-
-const copyIcon = `
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    viewBox="0 0 16 16"
-  >
-
-    <path
-      d="M0 0h16v16H0z"
-      fill="none"
-    />
-
-    <path
-      fill="currentColor"
-      d="M5 6H4a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1h1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1zm7-4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM8 3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"
-    />
-
-  </svg>
-`;
-
-document
-  .querySelectorAll(".copy-btn")
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      async () => {
-
-        const wrapper =
-          button.closest(".code-wrapper");
-
-        const code =
-          wrapper.querySelector("code").innerText;
-
-
-        try {
-
-          await navigator.clipboard.writeText(code);
-
-        } catch (error) {
-
-         
-          const textarea =
-            document.createElement("textarea");
-
-          textarea.value = code;
-
-          textarea.style.position = "fixed";
-          textarea.style.left = "-9999px";
-          textarea.style.top = "0";
-          textarea.style.opacity = "0";
-
-          document.body.appendChild(textarea);
-
-          textarea.focus();
-          textarea.select();
-
-          document.execCommand("copy");
-
-          textarea.remove();
-        }
-
-        button.innerHTML = "✓";
-
-        button.classList.add("copied");
-
+  <script>
+    document.querySelectorAll('.copy-btn').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(button.dataset.copy);
+        button.classList.add('copied');
+        button.setAttribute('aria-label', 'Copied');
         setTimeout(() => {
-          button.innerHTML = copyIcon;
-          button.classList.remove("copied");
+          button.classList.remove('copied');
+          button.setAttribute('aria-label', 'Copy');
         }, 1400);
-      }
-    );
-  });
-</script>
-
+      });
+    });
+  </script>
 </body>
 </html>
