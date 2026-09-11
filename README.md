@@ -1,1 +1,3 @@
 evm
+
+`zig version`
