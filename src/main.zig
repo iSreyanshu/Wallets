@@ -3,11 +3,11 @@ const keccak = @import("keccak");
 const secp = @import("secp256k1");
 
 const Mode = enum { normal, vanity, exclude };
-
-const Config = struct {
-    mode: Mode,
+            if (matches(digest[12..], &shared.config)) {
     pattern: []const u8 = "",
     prefix: bool = true,
+                var address: [40]u8 = undefined;
+                encodeHex(digest[12..], &address);
     excluded: [256]bool = [_]bool{false} ** 256,
 };
 
@@ -91,13 +91,7 @@ fn worker(shared: *Shared) void {
                 _ = shared.attempts.fetchAdd(local_attempts, .monotonic);
                 local_attempts = 0;
             }
-            public_key = generator.publicKey(&private_key) catch |err| switch (err) {
-                error.InvalidPrivateKey => continue,
-                else => {
-                    shared.failed.store(true, .release);
-                    return;
-                },
-            };
+            public_key = generator.publicKey(&private_key) catch continue;
             const digest = keccak.hash(public_key[1..]);
             var address: [40]u8 = undefined;
             encodeHex(digest[12..], &address);
@@ -122,21 +116,33 @@ fn worker(shared: *Shared) void {
     }
 }
 
-fn matches(address: []const u8, config: *const Config) bool {
-    return switch (config.mode) {
-        .normal => true,
-        .vanity => if (config.prefix) std.mem.startsWith(u8, address, config.pattern) else std.mem.endsWith(u8, address, config.pattern),
-        .exclude => for (address) |digit| {
-            if (config.excluded[digit]) break false;
-        } else true,
-    };
+fn matches(address_bytes: []const u8, config: *const Config) bool {
+    if (config.mode == .normal) return true;
+    if (config.mode == .vanity) {
+        const start = if (config.prefix) 0 else 40 - config.pattern.len;
+        for (config.pattern, 0..) |character, index| {
+            const byte = address_bytes[(start + index) / 2];
+            const nibble = if ((start + index) & 1 == 0) byte >> 4 else byte & 0x0f;
+            if (nibble != hexValue(character)) return false;
+        }
+        return true;
+    }
+    for (address_bytes) |byte| {
+        if (config.excluded[hexDigits[byte >> 4]] or config.excluded[hexDigits[byte & 0x0f]]) return false;
+    }
+    return true;
+}
+
+const hexDigits = "0123456789abcdef";
+
+fn hexValue(character: u8) u8 {
+    return if (character <= '9') character - '0' else character - 'a' + 10;
 }
 
 fn encodeHex(bytes: []const u8, output: []u8) void {
-    const digits = "0123456789abcdef";
     for (bytes, 0..) |byte, index| {
-        output[index * 2] = digits[byte >> 4];
-        output[index * 2 + 1] = digits[byte & 0x0f];
+        output[index * 2] = hexDigits[byte >> 4];
+        output[index * 2 + 1] = hexDigits[byte & 0x0f];
     }
 }
 

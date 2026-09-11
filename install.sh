@@ -17,7 +17,7 @@ case "$(uname -m)" in
 esac
 
 install_packages() {
-    local packages=(curl tar xz-utils build-essential libssl-dev ca-certificates)
+    local packages=(curl tar xz-utils build-essential ca-certificates)
     if [[ "$(id -u)" -eq 0 ]]; then
         apt-get update
         apt-get install -y "${packages[@]}"
@@ -26,12 +26,12 @@ install_packages() {
         sudo apt-get install -y "${packages[@]}"
     else
         printf 'Missing packages. Run this once with an account that has sudo access:\n'
-        printf '  sudo apt-get update && sudo apt-get install -y curl tar xz-utils build-essential libssl-dev ca-certificates\n'
+        printf '  sudo apt-get update && sudo apt-get install -y curl tar xz-utils build-essential ca-certificates\n'
         exit 1
     fi
 }
 
-if ! command -v cc >/dev/null 2>&1 || ! dpkg-query -W -f='${Status}' libssl-dev 2>/dev/null | grep -q 'install ok installed'; then
+if ! command -v cc >/dev/null 2>&1; then
     install_packages
 fi
 
@@ -58,5 +58,5 @@ elif [[ ! -f "${shell_file}" ]]; then
 fi
 
 printf 'Zig %s installed. Building evm...\n' "$(zig version)"
-zig build -Doptimize=ReleaseFast
+zig build -Doptimize=ReleaseFast -Dcpu="${ZIG_CPU:-native}"
 printf '\nSetup complete. Run: ./run.sh\n'

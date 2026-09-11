@@ -1,41 +1,42 @@
-const c = @cImport({
-    @cInclude("openssl/ec.h");
-    @cInclude("openssl/obj_mac.h");
-    @cInclude("openssl/bn.h");
-});
+const std = @import("std");
+const Curve = std.crypto.ecc.Secp256k1;
 
 pub const Generator = struct {
-    group: *c.EC_GROUP,
-    context: *c.BN_CTX,
-    order: *c.BIGNUM,
-    private_bn: *c.BIGNUM,
-    public_point: *c.EC_POINT,
-
     pub fn init() !Generator {
-        const group = c.EC_GROUP_new_by_curve_name(c.NID_secp256k1) orelse return error.OpenSSL;
-        const context = c.BN_CTX_new() orelse return error.OpenSSL;
-        const order = c.BN_new() orelse return error.OpenSSL;
-        const private_bn = c.BN_new() orelse return error.OpenSSL;
-        const public_point = c.EC_POINT_new(group) orelse return error.OpenSSL;
-        if (c.EC_GROUP_get_order(group, order, context) != 1) return error.OpenSSL;
-        return .{ .group = group, .context = context, .order = order, .private_bn = private_bn, .public_point = public_point };
+        return .{};
     }
 
-    pub fn deinit(self: *Generator) void {
-        c.EC_POINT_free(self.public_point);
-        c.BN_free(self.private_bn);
-        c.BN_free(self.order);
-        c.BN_CTX_free(self.context);
-        c.EC_GROUP_free(self.group);
-    }
+    pub fn deinit(_: *Generator) void {}
 
     pub fn publicKey(self: *Generator, private_key: *const [32]u8) ![65]u8 {
-        if (c.BN_bin2bn(private_key, 32, self.private_bn) == null) return error.OpenSSL;
-        if (c.BN_is_zero(self.private_bn) == 1 or c.BN_cmp(self.private_bn, self.order) >= 0) return error.InvalidPrivateKey;
-        if (c.EC_POINT_mul(self.group, self.public_point, self.private_bn, null, null, self.context) != 1) return error.OpenSSL;
-        var public_key: [65]u8 = undefined;
-        const length = c.EC_POINT_point2oct(self.group, self.public_point, c.POINT_CONVERSION_UNCOMPRESSED, &public_key, public_key.len, self.context);
-        if (length != public_key.len) return error.OpenSSL;
-        return public_key;
+        _ = self;
+        if (std.mem.allEqual(u8, private_key, 0)) return error.InvalidPrivateKey;
+        Curve.scalar.rejectNonCanonical(private_key.*, .big) catch return error.InvalidPrivateKey;
+        const point = Curve.basePoint.mul(private_key.*, .big) catch return error.InvalidPrivateKey;
+        return point.toUncompressedSec1();
     }
 };
+
+test "generator returns the secp256k1 base point for private key one" {
+    var generator = try Generator.init();
+    defer generator.deinit();
+    var private_key = [_]u8{0} ** 32;
+    private_key[31] = 1;
+    const public_key = try generator.publicKey(&private_key);
+    try std.testing.expectEqual(@as(u8, 4), public_key[0]);
+    try std.testing.expectEqualStrings(
+        "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798" ++
+            "483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8",
+        &hexString(public_key[1..]),
+    );
+}
+
+fn hexString(bytes: []const u8) [128]u8 {
+    var output: [128]u8 = undefined;
+    const digits = "0123456789abcdef";
+    for (bytes, 0..) |byte, index| {
+        output[index * 2] = digits[byte >> 4];
+        output[index * 2 + 1] = digits[byte & 0x0f];
+    }
+    return output;
+}

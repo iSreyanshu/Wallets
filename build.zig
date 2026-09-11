@@ -21,7 +21,6 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     }));
     exe.linkLibC();
-    exe.linkSystemLibrary("crypto");
     b.installArtifact(exe);
 
     const run = b.addRunArtifact(exe);
