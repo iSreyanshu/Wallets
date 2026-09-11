@@ -57,6 +57,6 @@ elif [[ ! -f "${shell_file}" ]]; then
     printf '%s\n' "${path_line}" > "${shell_file}"
 fi
 
-printf 'Zig %s installed. Building evm-wallets...\n' "$(zig version)"
+printf 'Zig %s installed. Building evm...\n' "$(zig version)"
 zig build -Doptimize=ReleaseFast
 printf '\nSetup complete. Run: ./run.sh\n'
