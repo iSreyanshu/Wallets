@@ -5,10 +5,18 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = arena.allocator();
     const args = try std.process.argsAlloc(allocator);
-    const output_path = try outputPath(args);
-    const html = try std.fs.cwd().readFileAlloc(allocator, "README.md", 1024 * 1024 * 4);
-    const directory = std.fs.path.dirname(output_path) orelse ".";
+    const html = try std.fs.cwd().readFileAlloc(allocator, ".github/index.html", 1024 * 1024 * 4);
 
+    if (args.len == 1) {
+        try writeOutput("docs/index.html", html);
+        return;
+    }
+
+    try writeOutput(try outputPath(args), html);
+}
+
+fn writeOutput(output_path: []const u8, html: []const u8) !void {
+    const directory = std.fs.path.dirname(output_path) orelse ".";
     try std.fs.cwd().makePath(directory);
     const output = try std.fs.cwd().createFile(output_path, .{ .truncate = true });
     defer output.close();
