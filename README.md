@@ -1,7 +1,7 @@
 # evm
 
-![Zig](https://img.shields.io/badge/Zig-0.13.0-f7a41d?logo=zig&logoColor=white)
-![Crypto](https://img.shields.io/badge/Crypto-secp256k1%20%2B%20Keccak-2ea043)
+![Zig](https://camo.githubusercontent.com/d76765c2b9b969ac751fd3327d8e5105f5ad248438194717fce38c025a90e5d8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5a69672d302e31332e302d6637613431643f6c6f676f3d7a6967266c6f676f436f6c6f723d7768697465)
+![Crypto](https://camo.githubusercontent.com/b78f744e5f520e134d15e1ea7176c8bc5c666bafbdb52f5981e54d8f61f7c448/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f43727970746f2d736563703235366b312532302532422532304b656363616b2d326561303433)
 
 **A local evm wallet generator with normal, vanity and exclusion modes.**
 It uses operating-system randomness, OpenSSL secp256k1, Ethereum Keccak-256 and a reusable Zig thread pool.
@@ -60,5 +60,5 @@ zig build run -Doptimize=ReleaseFast -- --count 1000 --worker 400
 
 - Private keys come from `std.crypto.random`, backed by the operating system.
 - `wallets.csv` contains spendable secrets. Treat it like a password vault.
-- Never commit, upload, or paste generated private keys into chat or issue trackers.
+- Never commit, upload or paste generated private keys into chat or issue trackers.
 - This tool does not connect to a blockchain or check balances.
