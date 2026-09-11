@@ -17,7 +17,7 @@ const Arguments = struct {
 };
 
 const Shared = struct {
-    file: std.fs.File,
+    output: std.io.BufferedWriter(64 * 1024, std.fs.File.Writer),
     write_mutex: std.Thread.Mutex = .{},
     next_index: std.atomic.Value(usize) = std.atomic.Value(usize).init(0),
     completed: std.atomic.Value(usize) = std.atomic.Value(usize).init(0),
@@ -36,13 +36,17 @@ pub fn main() !void {
     const total = arguments.count orelse try promptCount(allocator);
     const config = try promptConfig(allocator);
     const cpu_count = std.Thread.getCpuCount() catch 1;
-    const default_workers = std.math.mul(usize, cpu_count, 100) catch std.math.maxInt(usize);
+    const default_workers = cpu_count;
     const worker_count = @min(arguments.workers orelse default_workers, total);
 
     const file = try std.fs.cwd().createFile("wallets.csv", .{ .truncate = true });
     defer file.close();
     try file.writeAll("address,private_key\n");
-    var shared = Shared{ .file = file, .total = total, .config = config };
+    var shared = Shared{
+        .output = .{ .unbuffered_writer = file.writer() },
+        .total = total,
+        .config = config,
+    };
 
     var pool: std.Thread.Pool = undefined;
     try pool.init(.{ .allocator = allocator, .n_jobs = @intCast(worker_count) });
@@ -55,6 +59,9 @@ pub fn main() !void {
         std.time.sleep(100 * std.time.ns_per_ms);
     }
     wait_group.wait();
+    shared.output.flush() catch {
+        shared.failed.store(true, .release);
+    };
     drawProgress(total, total, shared.attempts.load(.monotonic), worker_count);
     std.debug.print("\nGenerated {d} wallets using {d} CPU workers.\n", .{ total, worker_count });
     if (shared.failed.load(.acquire)) return error.GenerationFailed;
@@ -66,6 +73,10 @@ fn worker(shared: *Shared) void {
         return;
     };
     defer generator.deinit();
+    var local_attempts: u64 = 0;
+    defer if (local_attempts != 0) {
+        _ = shared.attempts.fetchAdd(local_attempts, .monotonic);
+    };
 
     while (!shared.failed.load(.acquire)) {
         const index = shared.next_index.fetchAdd(1, .monotonic);
@@ -75,7 +86,11 @@ fn worker(shared: *Shared) void {
         var public_key: [65]u8 = undefined;
         while (true) {
             std.crypto.random.bytes(&private_key);
-            _ = shared.attempts.fetchAdd(1, .monotonic);
+            local_attempts += 1;
+            if (local_attempts & 1023 == 0) {
+                _ = shared.attempts.fetchAdd(local_attempts, .monotonic);
+                local_attempts = 0;
+            }
             public_key = generator.publicKey(&private_key) catch |err| switch (err) {
                 error.InvalidPrivateKey => continue,
                 else => {
@@ -86,10 +101,17 @@ fn worker(shared: *Shared) void {
             const digest = keccak.hash(public_key[1..]);
             var address: [40]u8 = undefined;
             encodeHex(digest[12..], &address);
-            if (matches(&address, shared.config)) {
+            if (matches(&address, &shared.config)) {
                 shared.write_mutex.lock();
                 defer shared.write_mutex.unlock();
-                shared.file.writer().print("{s},0x{f}\n", .{ &address, std.fmt.fmtSliceHexLower(&private_key) }) catch {
+                var line: [108]u8 = undefined;
+                @memcpy(line[0..40], &address);
+                line[40] = ',';
+                line[41] = '0';
+                line[42] = 'x';
+                encodeHex(&private_key, line[43..107]);
+                line[107] = '\n';
+                shared.output.writer().writeAll(&line) catch {
                     shared.failed.store(true, .release);
                     return;
                 };
@@ -100,7 +122,7 @@ fn worker(shared: *Shared) void {
     }
 }
 
-fn matches(address: []const u8, config: Config) bool {
+fn matches(address: []const u8, config: *const Config) bool {
     return switch (config.mode) {
         .normal => true,
         .vanity => if (config.prefix) std.mem.startsWith(u8, address, config.pattern) else std.mem.endsWith(u8, address, config.pattern),
@@ -110,7 +132,7 @@ fn matches(address: []const u8, config: Config) bool {
     };
 }
 
-fn encodeHex(bytes: []const u8, output: *[40]u8) void {
+fn encodeHex(bytes: []const u8, output: []u8) void {
     const digits = "0123456789abcdef";
     for (bytes, 0..) |byte, index| {
         output[index * 2] = digits[byte >> 4];
