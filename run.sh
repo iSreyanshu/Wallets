@@ -5,4 +5,4 @@ if [[ -x "$HOME/.local/zig/current/zig" ]]; then
 	export PATH="$HOME/.local/zig/current:$PATH"
 fi
 
-zig build run -Doptimize=ReleaseFast -Dcpu="${ZIG_CPU:-native}" -- "$@"
+zig build run --release=fast -Dcpu="${ZIG_CPU:-native}" -- "$@"

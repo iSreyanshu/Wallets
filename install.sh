@@ -58,5 +58,5 @@ elif [[ ! -f "${shell_file}" ]]; then
 fi
 
 printf 'Zig %s installed. Building evm...\n' "$(zig version)"
-zig build -Doptimize=ReleaseFast -Dcpu="${ZIG_CPU:-native}"
+zig build --release=fast -Dcpu="${ZIG_CPU:-native}"
 printf '\nSetup complete. Run: ./run.sh\n'
