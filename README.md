@@ -1,41 +1,23 @@
-# EVM Wallet Forge
+# evm
 
 ![Zig](https://img.shields.io/badge/Zig-0.13.0-f7a41d?logo=zig&logoColor=white)
 ![Crypto](https://img.shields.io/badge/Crypto-secp256k1%20%2B%20Keccak-2ea043)
-![Output](https://img.shields.io/badge/Output-wallets.csv-1f6feb)
 
-**A fast, local EVM wallet generator with normal, vanity, and exclusion modes.**
-It uses operating-system randomness, OpenSSL secp256k1, Ethereum Keccak-256,
-and a reusable Zig thread pool.
+**A local evm wallet generator with normal, vanity and exclusion modes.**
+It uses operating-system randomness, OpenSSL secp256k1, Ethereum Keccak-256 and a reusable Zig thread pool.
 
 ## Quick Start
 
 ```sh
-git clone <your-repository-url>
-cd gen
+git clone https://github.com/iSreyanshu/Wallets.git
+cd Wallets
 chmod +x install.sh run.sh
 ./install.sh
 ./run.sh
 ```
 
-The installer handles compiler, build, and OpenSSL prerequisites. It installs
+The installer handles compiler, build and OpenSSL prerequisites. It installs
 Zig in `~/.local/zig` and does not require a system-wide Zig package.
-
-## How It Works
-
-```mermaid
-flowchart LR
-	A[Interactive CLI] --> B{Generation mode}
-	B -->|Normal| C[Secure random private key]
-	B -->|Vanity| C
-	B -->|Exclude characters| C
-	C --> D[secp256k1 public key]
-	D --> E[Keccak-256]
-	E --> F{Address matches rules?}
-	F -->|No| C
-	F -->|Yes| G[Thread-safe CSV writer]
-	G --> H[wallets.csv]
-```
 
 ## Modes
 
@@ -52,21 +34,17 @@ its `0x` prefix):
 
 ```text
 address,private_key
-0123abcd...,0x...
+023bcd...,0x...
 ```
 
 ## Performance
 
-The default pool size is **100 workers per detected CPU core**, capped by the
+The default pool size is **100 workers per detected CPU core** capped by the
 requested wallet count. Override it with `--worker`:
 
 ```sh
 ./run.sh --count 100000 --worker 1000
 ```
-
-Green progress shows completed wallets; red shows remaining work. Vanity and
-exclusion difficulty is probabilistic, so a longer pattern can require many
-more attempts regardless of worker count.
 
 ## Manual Build
 
