@@ -84,13 +84,12 @@ fn worker(shared: *Shared) void {
                 },
             };
             const digest = keccak.hash(public_key[1..]);
-            if (matches(digest[12..], shared.config)) {
+            var address: [40]u8 = undefined;
+            encodeHex(digest[12..], &address);
+            if (matches(&address, shared.config)) {
                 shared.write_mutex.lock();
                 defer shared.write_mutex.unlock();
-                shared.file.writer().print("{f},0x{f}\n", .{
-                    std.fmt.fmtSliceHexLower(digest[12..]),
-                    std.fmt.fmtSliceHexLower(&private_key),
-                }) catch {
+                shared.file.writer().print("{s},0x{f}\n", .{ &address, std.fmt.fmtSliceHexLower(&private_key) }) catch {
                     shared.failed.store(true, .release);
                     return;
                 };
@@ -109,6 +108,14 @@ fn matches(address: []const u8, config: Config) bool {
             if (config.excluded[digit]) break false;
         } else true,
     };
+}
+
+fn encodeHex(bytes: []const u8, output: *[40]u8) void {
+    const digits = "0123456789abcdef";
+    for (bytes, 0..) |byte, index| {
+        output[index * 2] = digits[byte >> 4];
+        output[index * 2 + 1] = digits[byte & 0x0f];
+    }
 }
 
 fn promptConfig(allocator: std.mem.Allocator) !Config {
@@ -136,10 +143,13 @@ fn promptConfig(allocator: std.mem.Allocator) !Config {
         config.mode = .exclude;
         std.debug.print("Enter hexadecimal characters to exclude, separated by commas (example: b,6,f): ", .{});
         const input = try readLine(allocator);
-        var iterator = std.mem.splitScalar(u8, input, ',');
+        const values = std.mem.trimRight(u8, input, ",");
+        if (values.len == 0) return error.InvalidExcludedCharacter;
+        var iterator = std.mem.splitScalar(u8, values, ',');
         while (iterator.next()) |part| {
-            if (part.len != 1 or !std.ascii.isHex(part[0])) return error.InvalidExcludedCharacter;
-            config.excluded[std.ascii.toLower(part[0])] = true;
+            const character = std.mem.trim(u8, part, " \t");
+            if (character.len != 1 or !std.ascii.isHex(character[0])) return error.InvalidExcludedCharacter;
+            config.excluded[std.ascii.toLower(character[0])] = true;
         }
         return config;
     }
