@@ -3,12 +3,12 @@ const keccak = @import("keccak");
 const secp = @import("secp256k1");
 
 const Mode = enum { normal, vanity, exclude };
-            if (matches(digest[12..], &shared.config)) {
+
+const Config = struct {
+    mode: Mode,
     pattern: []const u8 = "",
     prefix: bool = true,
-                var address: [40]u8 = undefined;
-                encodeHex(digest[12..], &address);
-    excluded: [256]bool = [_]bool{false} ** 256,
+    excluded: [16]bool = [_]bool{false} ** 16,
 };
 
 const Arguments = struct {
@@ -74,9 +74,12 @@ fn worker(shared: *Shared) void {
     };
     defer generator.deinit();
     var local_attempts: u64 = 0;
+    var output_buffer: [108 * 64]u8 = undefined;
+    var output_len: usize = 0;
     defer if (local_attempts != 0) {
         _ = shared.attempts.fetchAdd(local_attempts, .monotonic);
     };
+    defer flushOutput(shared, &output_buffer, &output_len);
 
     while (!shared.failed.load(.acquire)) {
         const index = shared.next_index.fetchAdd(1, .monotonic);
@@ -93,27 +96,33 @@ fn worker(shared: *Shared) void {
             }
             public_key = generator.publicKey(&private_key) catch continue;
             const digest = keccak.hash(public_key[1..]);
-            var address: [40]u8 = undefined;
-            encodeHex(digest[12..], &address);
-            if (matches(&address, &shared.config)) {
-                shared.write_mutex.lock();
-                defer shared.write_mutex.unlock();
-                var line: [108]u8 = undefined;
+            if (matches(digest[12..], &shared.config)) {
+                if (output_len + 108 > output_buffer.len) flushOutput(shared, &output_buffer, &output_len);
+                var line = output_buffer[output_len..][0..108];
+                var address: [40]u8 = undefined;
+                encodeHex(digest[12..], &address);
                 @memcpy(line[0..40], &address);
                 line[40] = ',';
                 line[41] = '0';
                 line[42] = 'x';
                 encodeHex(&private_key, line[43..107]);
                 line[107] = '\n';
-                shared.output.writer().writeAll(&line) catch {
-                    shared.failed.store(true, .release);
-                    return;
-                };
+                output_len += 108;
                 _ = shared.completed.fetchAdd(1, .release);
                 break;
             }
         }
     }
+}
+
+fn flushOutput(shared: *Shared, buffer: []u8, length: *usize) void {
+    if (length.* == 0) return;
+    shared.write_mutex.lock();
+    defer shared.write_mutex.unlock();
+    shared.output.writer().writeAll(buffer[0..length.*]) catch {
+        shared.failed.store(true, .release);
+    };
+    length.* = 0;
 }
 
 fn matches(address_bytes: []const u8, config: *const Config) bool {
@@ -128,7 +137,7 @@ fn matches(address_bytes: []const u8, config: *const Config) bool {
         return true;
     }
     for (address_bytes) |byte| {
-        if (config.excluded[hexDigits[byte >> 4]] or config.excluded[hexDigits[byte & 0x0f]]) return false;
+        if (config.excluded[byte >> 4] or config.excluded[byte & 0x0f]) return false;
     }
     return true;
 }
@@ -177,7 +186,7 @@ fn promptConfig(allocator: std.mem.Allocator) !Config {
         while (iterator.next()) |part| {
             const character = std.mem.trim(u8, part, " \t");
             if (character.len != 1 or !std.ascii.isHex(character[0])) return error.InvalidExcludedCharacter;
-            config.excluded[std.ascii.toLower(character[0])] = true;
+            config.excluded[hexValue(std.ascii.toLower(character[0]))] = true;
         }
         return config;
     }
