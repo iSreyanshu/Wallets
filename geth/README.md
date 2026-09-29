@@ -1,4 +1,4 @@
-> **go version guide**
+> **go version**
 
 ```bash
 git clone https://github.com/iSreyanshu/Wallets.git
