@@ -1,4 +1,9 @@
-> **go version**
+> **go version guide**
+
+```bash
+git clone https://github.com/iSreyanshu/Wallets.git
+cd geth
+```
 
 ```go
 go mod init gen
