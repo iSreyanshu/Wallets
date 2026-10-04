@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="https://go.dev/blog/go-brand/Go-Logo/PNG/Go-Logo_LightBlue.png" alt="Go" width="180">
+</p>
+
 > **go version**
 
 ```bash
