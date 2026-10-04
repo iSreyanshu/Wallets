@@ -6,13 +6,14 @@
 
 **Build and run the optimized native binary:**
 
-**`git clone https://github.com/iSreyanshu/Wallets.git`**
+```bash
+git clone https://github.com/iSreyanshu/Wallets.git
+cd Wallets
 
-**`cd Wallets`**
+bash install.sh
+```
 
-**`bash install.sh`**
-
-**`./run.sh --count 1000 --workers 2`**
+**run: `./run.sh --count 1000 --workers 2`**
 
 **Workers are CPU threads. The default uses all CPUs visible to the process; set
 `--workers` explicitly when running alongside other workloads. `--worker` is
