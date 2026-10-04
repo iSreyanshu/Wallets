@@ -1,7 +1,7 @@
 > **go version**
 
 ```bash
-git clone https://github.com/iSreyanshu/Wallets.git
+git clone https://github.com/iSreyanshu/Wallets.git && cd Wallets
 cd geth
 ```
 
