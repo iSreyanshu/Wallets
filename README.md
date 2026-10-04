@@ -18,4 +18,4 @@
 `--workers` explicitly when running alongside other workloads. `--worker` is
 kept as a compatibility alias.**
 
-> ***suggestion: use go version for vanity gen**
+> ***suggestion: use [go version](https://github.com/iSreyanshu/Wallets/tree/app/geth) for vanity gen**
